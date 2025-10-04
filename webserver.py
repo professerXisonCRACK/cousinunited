@@ -1,19 +1,21 @@
 import os
-from flask import Flask, request, abort, render_template_string
+from flask import Flask, request, abort
 import json
 
 app = Flask(__name__)
-
 DATA_FILE = "cousins.json"
-if os.path.exists(DATA_FILE):
-    with open(DATA_FILE) as f:
-        cousins = json.load(f)
-else:
-    cousins = {}
 
 @app.route("/cousin/<user_id>")
 def cousin_profile(user_id):
     token = request.args.get("token")
+    
+    # Load fresh data every time
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE) as f:
+            cousins = json.load(f)
+    else:
+        cousins = {}
+    
     data = cousins.get(user_id)
     if not data or data.get("token") != token:
         return abort(403)
