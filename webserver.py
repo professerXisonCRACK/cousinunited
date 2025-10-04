@@ -1,53 +1,25 @@
 import os
-import requests
 from flask import Flask, request, abort
+import json
 
 app = Flask(__name__)
+DATA_FILE = "cousins.json"
 
-# Replace this with your GitHub JSON raw URL
-JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/nenenen/main/cousins.json"
-
-@app.route("/cousin/<user_id>", methods=["GET", "POST"])
+@app.route("/cousin/<user_id>")
 def cousin_profile(user_id):
-    # Fetch latest JSON from GitHub for live updates
-    try:
-        resp = requests.get(JSON_URL)
-        resp.raise_for_status()
-        cousins = resp.json()
-    except Exception as e:
-        return f"❌ Could not load data: {e}", 500
+    token = request.args.get("token")
+
+    # Load fresh JSON each request for instant updates
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            cousins = json.load(f)
+    else:
+        cousins = {}
 
     data = cousins.get(user_id)
-    if not data:
-        return abort(404)
+    if not data or data.get("token") != token:
+        return abort(403)
 
-    # Login form for token/password
-    if request.method == "POST":
-        token = request.form.get("token")
-        if token != data.get("token"):
-            return """
-            <html>
-            <body style='text-align:center; font-family:sans-serif; margin-top:100px;'>
-                <h2>❌ Incorrect token!</h2>
-                <a href="">Try again</a>
-            </body>
-            </html>
-            """, 403
-    else:
-        # Show login form
-        return f"""
-        <html>
-        <body style='text-align:center; font-family:sans-serif; margin-top:100px;'>
-            <h2>Enter your profile token/password</h2>
-            <form method='POST'>
-                <input type='password' name='token' placeholder='Token' style='padding:10px; font-size:16px;'/>
-                <button type='submit' style='padding:10px 20px; font-size:16px;'>View Profile</button>
-            </form>
-        </body>
-        </html>
-        """
-
-    # Profile HTML
     html = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -63,34 +35,26 @@ def cousin_profile(user_id):
                 font-family: 'Segoe UI', sans-serif;
             }}
             .card {{
-                background-color: #f5f5f5;
+                background-color: #f0f0f0;
                 border-radius: 1rem;
-                padding-top: 70px;
                 box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-                max-width: 600px;
-                margin: auto;
+                transition: transform 0.3s, box-shadow 0.3s;
+                padding: 2rem;
+            }}
+            .card:hover {{
+                transform: translateY(-8px);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             }}
             .avatar {{
                 width: 120px;
                 height: 120px;
                 border-radius: 50%;
-                border:5px solid #fff;
-                object-fit: cover;
-                position: relative;
-                top: -60px;
-                margin-bottom: -60px;
-            }}
-            .banner {{
-                width: 100%;
-                max-height: 300px;
-                object-fit: cover;
-                border-top-left-radius: 1rem;
-                border-top-right-radius: 1rem;
-                margin-bottom: 20px;
+                margin: 0 auto 1rem auto;
+                display: block;
             }}
             h1 {{
                 font-size: 2rem;
-                margin-bottom: 1rem;
+                margin-bottom: 0.5rem;
             }}
             p {{
                 font-size: 1.2rem;
@@ -99,15 +63,12 @@ def cousin_profile(user_id):
     </head>
     <body>
         <div class="container my-5">
-            <div class="card text-center">
-                {"<img src='"+data['banner']+"' class='banner'>" if data.get('banner') else ""}
-                {"<img src='"+data.get('avatar', '')+"' class='avatar'>" if data.get('avatar') else ""}
-                <div class="card-body">
-                    <h1>{data['name']}</h1>
-                    <p>🆔 <strong>{data['cousin_id']}</strong></p>
-                    <p>🏅 Rank: <strong>#{data['rank']}</strong></p>
-                    <p>👀 Reputation: <strong>{data['rep']}/100</strong></p>
-                </div>
+            <div class="card mx-auto text-center" style="max-width: 600px;">
+                {"<img src='"+data['avatar']+"' class='avatar'>" if data.get('avatar') else ""}
+                <h1>{data['name']}</h1>
+                <p>🆔 <strong>{data['cousin_id']}</strong></p>
+                <p>🏅 Rank: <strong>#{data['rank']}</strong></p>
+                <p>👀 Reputation: <strong>{data['rep']}/100</strong></p>
             </div>
         </div>
     </body>
