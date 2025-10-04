@@ -4,14 +4,14 @@ from flask import Flask, request, abort
 
 app = Flask(__name__)
 
-# Link to your GitHub JSON (always fetch latest)
-JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/nenenen/main/cousins.json"
+# GitHub raw URL of your cousins.json
+JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/nenenen/refs/heads/main/cousins.json"
 
 @app.route("/cousin/<user_id>")
 def cousin_profile(user_id):
     token = request.args.get("token")
 
-    # Fetch latest JSON from GitHub
+    # Fetch latest JSON from GitHub for live updates
     try:
         resp = requests.get(JSON_URL)
         resp.raise_for_status()
@@ -22,9 +22,6 @@ def cousin_profile(user_id):
     data = cousins.get(user_id)
     if not data or data.get("token") != token:
         return abort(403)
-
-    # Discord avatar at the top (if you want it)
-    avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{data.get('avatar', '')}.png?size=256" if data.get('avatar') else ""
 
     html = f"""
     <!DOCTYPE html>
@@ -44,12 +41,12 @@ def cousin_profile(user_id):
                 background-color: #f8f9fa;
                 border: none;
                 border-radius: 1rem;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
                 transition: transform 0.3s, box-shadow 0.3s;
             }}
             .card:hover {{
                 transform: translateY(-8px);
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             }}
             .banner {{
                 width: 100%;
@@ -67,27 +64,28 @@ def cousin_profile(user_id):
                 height: 120px;
                 border-radius: 50%;
                 margin-top: -60px;
-                border: 4px solid #fff;
+                border: 4px solid #ffffff;
                 object-fit: cover;
             }}
             .card-body p {{
                 transition: color 0.3s;
+                font-size: 1.2rem;
             }}
             .card-body p:hover {{
-                color: #007bff;
+                color: #0d6efd;
             }}
             h1 {{
                 margin-bottom: 0.5rem;
-                font-size: 2rem;
+                font-size: 2.5rem;
             }}
         </style>
     </head>
     <body>
         <div class="container my-5">
-            <div class="card mx-auto text-center" style="max-width: 600px;">
+            <div class="card mx-auto text-center" style="max-width: 600px; position: relative;">
                 {"<img src='"+data['banner']+"' class='banner'>" if data.get('banner') else ""}
-                {"<img src='"+avatar_url+"' class='avatar'>" if avatar_url else ""}
-                <div class="card-body">
+                {"<img src='"+data.get('avatar', '')+"' class='avatar'>" if data.get('avatar') else ""}
+                <div class="card-body mt-3">
                     <h1 class="card-title">{data['name']}</h1>
                     <p class="card-text">🆔 <strong>{data['cousin_id']}</strong></p>
                     <p class="card-text">🏅 Rank: <strong>#{data['rank']}</strong></p>
