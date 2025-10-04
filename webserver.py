@@ -4,13 +4,11 @@ from flask import Flask, request, abort
 
 app = Flask(__name__)
 
-# GitHub raw URL of your cousins.json
-JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/nenenen/refs/heads/main/cousins.json"
+# Replace this with your GitHub JSON raw URL
+JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/nenenen/main/cousins.json"
 
-@app.route("/cousin/<user_id>")
+@app.route("/cousin/<user_id>", methods=["GET", "POST"])
 def cousin_profile(user_id):
-    token = request.args.get("token")
-
     # Fetch latest JSON from GitHub for live updates
     try:
         resp = requests.get(JSON_URL)
@@ -20,9 +18,36 @@ def cousin_profile(user_id):
         return f"❌ Could not load data: {e}", 500
 
     data = cousins.get(user_id)
-    if not data or data.get("token") != token:
-        return abort(403)
+    if not data:
+        return abort(404)
 
+    # Login form for token/password
+    if request.method == "POST":
+        token = request.form.get("token")
+        if token != data.get("token"):
+            return """
+            <html>
+            <body style='text-align:center; font-family:sans-serif; margin-top:100px;'>
+                <h2>❌ Incorrect token!</h2>
+                <a href="">Try again</a>
+            </body>
+            </html>
+            """, 403
+    else:
+        # Show login form
+        return f"""
+        <html>
+        <body style='text-align:center; font-family:sans-serif; margin-top:100px;'>
+            <h2>Enter your profile token/password</h2>
+            <form method='POST'>
+                <input type='password' name='token' placeholder='Token' style='padding:10px; font-size:16px;'/>
+                <button type='submit' style='padding:10px 20px; font-size:16px;'>View Profile</button>
+            </form>
+        </body>
+        </html>
+        """
+
+    # Profile HTML
     html = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -38,58 +63,50 @@ def cousin_profile(user_id):
                 font-family: 'Segoe UI', sans-serif;
             }}
             .card {{
-                background-color: #f8f9fa;
-                border: none;
+                background-color: #f5f5f5;
                 border-radius: 1rem;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-                transition: transform 0.3s, box-shadow 0.3s;
-            }}
-            .card:hover {{
-                transform: translateY(-8px);
-                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            }}
-            .banner {{
-                width: 100%;
-                border-top-left-radius: 1rem;
-                border-top-right-radius: 1rem;
-                max-height: 300px;
-                object-fit: cover;
-                transition: transform 0.5s ease;
-            }}
-            .banner:hover {{
-                transform: scale(1.05);
+                padding-top: 70px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                max-width: 600px;
+                margin: auto;
             }}
             .avatar {{
                 width: 120px;
                 height: 120px;
                 border-radius: 50%;
-                margin-top: -60px;
-                border: 4px solid #ffffff;
+                border:5px solid #fff;
                 object-fit: cover;
+                position: relative;
+                top: -60px;
+                margin-bottom: -60px;
             }}
-            .card-body p {{
-                transition: color 0.3s;
-                font-size: 1.2rem;
-            }}
-            .card-body p:hover {{
-                color: #0d6efd;
+            .banner {{
+                width: 100%;
+                max-height: 300px;
+                object-fit: cover;
+                border-top-left-radius: 1rem;
+                border-top-right-radius: 1rem;
+                margin-bottom: 20px;
             }}
             h1 {{
-                margin-bottom: 0.5rem;
-                font-size: 2.5rem;
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }}
+            p {{
+                font-size: 1.2rem;
             }}
         </style>
     </head>
     <body>
         <div class="container my-5">
-            <div class="card mx-auto text-center" style="max-width: 600px; position: relative;">
+            <div class="card text-center">
                 {"<img src='"+data['banner']+"' class='banner'>" if data.get('banner') else ""}
                 {"<img src='"+data.get('avatar', '')+"' class='avatar'>" if data.get('avatar') else ""}
-                <div class="card-body mt-3">
-                    <h1 class="card-title">{data['name']}</h1>
-                    <p class="card-text">🆔 <strong>{data['cousin_id']}</strong></p>
-                    <p class="card-text">🏅 Rank: <strong>#{data['rank']}</strong></p>
-                    <p class="card-text">👀 Reputation: <strong>{data['rep']}/100</strong></p>
+                <div class="card-body">
+                    <h1>{data['name']}</h1>
+                    <p>🆔 <strong>{data['cousin_id']}</strong></p>
+                    <p>🏅 Rank: <strong>#{data['rank']}</strong></p>
+                    <p>👀 Reputation: <strong>{data['rep']}/100</strong></p>
                 </div>
             </div>
         </div>
