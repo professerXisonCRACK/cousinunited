@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import Flask, request, abort, render_template_string
+from flask import Flask, request, abort, render_template_string, redirect, url_for
 
 app = Flask(__name__)
 JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/cousinunited/refs/heads/main/cousins.json"
@@ -19,11 +19,12 @@ def cousin_profile(user_id):
     if not data:
         return abort(404)
 
-    # POST = password submitted
+    verified = request.args.get("verified") == "1"
+
     if request.method == "POST":
         password = request.form.get("password")
         if password == data.get("password"):
-            # Show 5-second loading screen with spinner
+            # Correct password → show loading page first, then redirect with verified=1
             return render_template_string("""
 <!DOCTYPE html>
 <html lang="en">
@@ -34,38 +35,38 @@ def cousin_profile(user_id):
 <style>
 body {
     background:black;
-    color:white;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
     height:100vh;
+    color:white;
     font-family:'Segoe UI', sans-serif;
-    text-align:center;
 }
 h1 {
     font-size:2rem;
     margin-bottom:40px;
     text-shadow: 0 0 15px white, 0 0 30px white;
 }
-/* Spinner */
+/* Neon Ring Spinner */
 .spinner {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #ffffff; /* White */
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    animation: spin 1s linear infinite;
+  width: 80px;
+  height: 80px;
+  border: 8px solid rgba(255,255,255,0.1);
+  border-top: 8px solid #00fff7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7;
 }
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
 <script>
-// Redirect to profile after 5 seconds
-setTimeout(function() {
-    window.location.href = window.location.href + "?show_profile=1";
+// Redirect to profile after 5 seconds with verified=1
+setTimeout(function(){
+    window.location.href = window.location.pathname + "?verified=1";
 }, 5000);
 </script>
 </head>
@@ -75,9 +76,14 @@ setTimeout(function() {
 </body>
 </html>
 """)
+        else:
+            return render_template_string("""
+                <h1>❌ Wrong password!</h1>
+                <a href="">Try again</a>
+            """)
 
-    # GET request = show password form OR direct to profile if show_profile=1
-    if request.args.get("show_profile") == "1":
+    # GET request with verified=1 → show profile
+    if verified:
         return render_template_string("""
 <!DOCTYPE html>
 <html lang="en">
@@ -117,7 +123,7 @@ p { font-size:1.2rem; margin:5px 0; text-shadow:0 0 10px white; }
 </html>
 """, data=data)
 
-    # Show password form
+    # GET request → show password form
     return render_template_string("""
 <!DOCTYPE html>
 <html lang="en">
