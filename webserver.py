@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # ✅ Path to the same cousins.json your bot updates on the VPS
 COUSINS_FILE = "/home/container/cousins.json"
-JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/nenenen/main/cousins.json"
+JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/cousinunited/refs/heads/main/cousins.json"
 
 @app.route("/cousin/<user_id>", methods=["GET", "POST"])
 def cousin_profile(user_id):
