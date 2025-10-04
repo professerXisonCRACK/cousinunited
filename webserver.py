@@ -1,23 +1,22 @@
 import os
-from flask import Flask, request, abort
 import json
+import requests
+from flask import Flask, request, abort
 
 app = Flask(__name__)
-DATA_FILE = "cousins.json"
-
-# Auto-create file if missing (won't overwrite existing data)
-if not os.path.exists(DATA_FILE):
-    with open(DATA_FILE, "w") as f:
-        f.write("{}")
+JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/nenenen/refs/heads/main/cousins.json"
 
 @app.route("/cousin/<user_id>")
 def cousin_profile(user_id):
     token = request.args.get("token")
     
-    # Load fresh data every time
-    with open(DATA_FILE) as f:
-        cousins = json.load(f)
-    
+    # Fetch fresh data every request
+    try:
+        r = requests.get(JSON_URL)
+        cousins = r.json()
+    except:
+        cousins = {}
+
     data = cousins.get(user_id)
     if not data or data.get("token") != token:
         return abort(403)
