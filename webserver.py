@@ -5,163 +5,9 @@ from flask import Flask, request, abort, render_template_string
 app = Flask(__name__)
 JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/cousinunited/refs/heads/main/cousins.json"
 
-# --- Templates (fixed centering + responsive design) ---
-LOADING_HTML = """
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Loading Cousin Network...</title>
-<style>
-:root{
-  --bg:#000;
-  --neon:#00fff7;
-  --accent:#61f3ff;
-  --muted:rgba(255,255,255,0.08);
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0;}
-body{
-  background:var(--bg);
-  color:#fff;
-  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  overflow:hidden;
-}
-.container{
-  width:100%;
-  max-width:520px;
-  padding:28px;
-}
-.title{
-  font-size:1.6rem;
-  letter-spacing:0.06em;
-  margin-bottom:22px;
-  text-shadow: 0 0 22px rgba(0,255,255,0.08);
-}
-.ring{
-  width:110px;
-  height:110px;
-  margin:0 auto 22px;
-  border-radius:50%;
-  position:relative;
-  box-shadow: 0 0 40px rgba(0,255,247,0.12);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.ring::before{
-  content:"";
-  position:absolute;
-  inset:6px;
-  border-radius:50%;
-  border:6px solid rgba(255,255,255,0.03);
-}
-.spinner {
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  border:6px solid rgba(255,255,255,0.06);
-  border-top-color:var(--neon);
-  animation:spin 1s linear infinite;
-  box-shadow: 0 0 20px var(--neon);
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.hint{margin-top:12px;font-size:.95rem;color:rgba(255,255,255,0.7)}
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="title">Loading Cousin Network...</div>
-  <div class="ring">
-    <div class="spinner"></div>
-  </div>
-  <div class="hint">Syncing profile data — this takes a sec</div>
-</div>
-<script>
-setTimeout(function(){
-    window.location.href = window.location.pathname + "?verified=1";
-}, 3000);
-</script>
-</body>
-</html>
-"""
-
-LOGIN_HTML = """
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Enter password</title>
-<style>
-:root{
-  --bg:#000;
-  --neon:#00fff7;
-  --glass: rgba(255,255,255,0.03);
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0;}
-body{
-  background: linear-gradient(180deg,#000 0%, #050505 60%);
-  color:#fff;
-  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-.card{
-  width:100%;
-  max-width:420px;
-  background:var(--glass);
-  border-radius:14px;
-  padding:28px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 0 20px rgba(0,255,247,0.03);
-  text-align:center;
-}
-h1{margin:0 0 12px; font-size:1.4rem; text-shadow:0 0 10px rgba(0,255,247,0.04)}
-form{display:flex; flex-direction:column; align-items:center}
-input[type="password"]{
-  width:100%;
-  padding:12px 14px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.06);
-  background:rgba(255,255,255,0.02);
-  color:#fff;
-  margin-bottom:12px;
-  font-size:1rem;
-  outline:none;
-}
-button{
-  padding:11px 18px;
-  border-radius:10px;
-  border:none;
-  background:linear-gradient(90deg,var(--neon), #61f3ff);
-  color:#000;
-  font-weight:700;
-  cursor:pointer;
-  width:100%;
-}
-small{display:block; margin-top:10px; color:rgba(255,255,255,0.6)}
-</style>
-</head>
-<body>
-<div class="card">
-  <h1>Enter your password to view profile</h1>
-  <form method="post">
-    <input type="password" name="password" placeholder="Password" required />
-    <button type="submit">Enter</button>
-  </form>
-  <small>Protected profile</small>
-</div>
-</body>
-</html>
-"""
+# --- Templates ---
+LOADING_HTML = """..."""  # Keep your original loading HTML
+LOGIN_HTML = """..."""    # Keep your original login HTML
 
 PROFILE_HTML = """
 <!doctype html>
@@ -173,136 +19,162 @@ PROFILE_HTML = """
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
+  --blue:#00bfff;
+  --white:#ffffff;
   --bg:#000;
-  --neon:#00fff7;
-  --accent:#61f3ff;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  background: radial-gradient(1200px 600px at 20% 10%, rgba(0,255,247,0.04), transparent 6%),
-              radial-gradient(1000px 500px at 85% 90%, rgba(97,243,255,0.03), transparent 6%),
-              var(--bg);
-  color:#fff;
-  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  overflow-x:hidden;
+
+/* Glow animations */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 8px var(--blue),0 0 16px var(--blue); }
+  50% { box-shadow: 0 0 20px var(--white),0 0 40px var(--blue); }
+  100% { box-shadow: 0 0 8px var(--blue),0 0 16px var(--blue); }
 }
+@keyframes textGlow {
+  0% { text-shadow: 0 0 4px var(--blue); }
+  50% { text-shadow: 0 0 12px var(--white),0 0 24px var(--blue); }
+  100% { text-shadow: 0 0 4px var(--blue); }
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--white);
+  display:flex;align-items:center;justify-content:center;padding:24px;}
+
 .wrapper{
   width:100%;
   max-width:900px;
-  margin:auto;
-  position:relative;
 }
+
 .card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:18px;
-  padding:28px;
-  box-shadow: 0 10px 50px rgba(0,0,0,0.7);
-  position:relative;
-  overflow:hidden;
-}
-.banner{
-  width:100%;
-  height:240px;
-  border-radius:12px;
-  object-fit:cover;
-  filter:brightness(.55);
-}
-.avatar-wrap{
-  position:absolute;
-  left:50%;
-  top:180px;
-  transform:translate(-50%,-50%);
+  background: rgba(0,0,0,0.75);
+  border-radius:24px;
+  padding:48px;
   text-align:center;
+  animation:pulseGlow 5s infinite ease-in-out;
 }
-.avatar{
-  width:140px;height:140px;border-radius:50%;
-  border:6px solid rgba(255,255,255,0.06);
-  box-shadow:0 6px 30px rgba(0,255,247,0.06);
+
+.avatar-wrap{
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  overflow:hidden;
+  margin:0 auto 24px;
+  border:3px solid var(--blue);
+  animation:pulseGlow 5s infinite ease-in-out;
+}
+
+.avatar-wrap img{
+  width:100%;
+  height:100%;
   object-fit:cover;
 }
+
 .username{
   font-size:2rem;
   font-weight:700;
-  margin-top:12px;
-  text-shadow:0 0 18px rgba(0,255,247,0.18);
+  animation:textGlow 4s infinite ease-in-out;
+  margin-bottom:6px;
 }
+
 .verified-badge{
   display:inline-block;
-  margin-left:8px;
-  background:linear-gradient(90deg,var(--neon),var(--accent));
-  color:#001;
-  padding:4px 8px;
-  border-radius:8px;
-  font-size:.8rem;
+  background:linear-gradient(90deg,var(--blue),var(--white));
+  color:#000;
   font-weight:700;
+  padding:4px 8px;
+  border-radius:6px;
+  margin-left:8px;
 }
+
+.subtitle{
+  font-size:1rem;
+  color:#cfcfcf;
+  margin-bottom:18px;
+}
+
 .info-row{
   display:flex;
   justify-content:center;
   flex-wrap:wrap;
   gap:12px;
-  margin-top:20px;
+  margin-bottom:20px;
 }
+
 .info-pill{
-  background:rgba(255,255,255,0.03);
-  padding:8px 12px;
-  border-radius:10px;
+  background: rgba(255,255,255,0.05);
+  padding:6px 12px;
+  border-radius:12px;
   font-weight:600;
-  font-size:.9rem;
 }
+
 .status-card{
-  margin:30px auto 0;
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:12px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+  background: rgba(255,255,255,0.05);
   padding:12px;
   border-radius:12px;
-  width:fit-content;
-  box-shadow:0 6px 30px rgba(0,0,0,0.6);
+  margin-top:20px;
 }
+
 .status-avatar{
-  width:52px;height:52px;border-radius:50%;object-fit:cover;
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid rgba(0,191,255,0.3);
+  animation:pulseGlow 5s infinite ease-in-out;
 }
-.status-text{font-weight:600;font-size:.95rem}
-.status-sub{font-size:.85rem;color:rgba(255,255,255,0.6)}
+
+.status-text{
+  font-weight:600;
+}
+
+.status-sub{
+  font-size:0.85rem;
+  color:#ccc;
+}
+
+@media(max-width:720px){
+  .card{padding:28px;}
+  .avatar-wrap{width:100px;height:100px;}
+  .username{font-size:1.6rem;}
+  .subtitle{font-size:0.95rem;}
+}
 </style>
 </head>
 <body>
 <div class="wrapper">
   <div class="card">
-    {% if data.banner %}
-      <img src="{{ data.banner }}" class="banner">
-    {% endif %}
     <div class="avatar-wrap">
       {% if data.avatar %}
-        <img src="{{ data.avatar }}" class="avatar">
+        <img src="{{ data.avatar }}" alt="avatar">
       {% endif %}
-      <div class="username">
-        {{ data.name }}
-        {% if data.verified %}<span class="verified-badge">VERIFIED</span>{% endif %}
-      </div>
-      <div class="info-row">
-        <div class="info-pill">🆔 ID: {{ data.cousin_id }}</div>
-        <div class="info-pill">🏅 Rank: #{{ data.rank }}</div>
-        <div class="info-pill">👀 Rep: {{ data.rep }}/100</div>
-      </div>
-      <div class="status-card">
-        {% if data.small_avatar %}
-          <img src="{{ data.small_avatar }}" class="status-avatar">
-        {% elif data.avatar %}
-          <img src="{{ data.avatar }}" class="status-avatar">
-        {% endif %}
-        <div>
-          <div class="status-text">{{ data.status_name or data.name }}</div>
-          <div class="status-sub">{{ data.status_text or 'currently doing nothing' }}</div>
-        </div>
+    </div>
+    <div class="username">
+      {{ data.name }}
+      {% if data.verified %}
+        <span class="verified-badge">VERIFIED</span>
+      {% endif %}
+    </div>
+    <div class="subtitle">hello my name is {{ data.display_name or data.name }}!!!</div>
+    <div class="info-row">
+      <div class="info-pill">🆔 Cousin ID: <strong>{{ data.cousin_id }}</strong></div>
+      <div class="info-pill">🏅 Rank: <strong>#{{ data.rank }}</strong></div>
+      <div class="info-pill">👀 Rep: <strong>{{ data.rep }}/100</strong></div>
+    </div>
+    <div class="status-card">
+      {% if data.small_avatar %}
+        <img src="{{ data.small_avatar }}" class="status-avatar">
+      {% elif data.avatar %}
+        <img src="{{ data.avatar }}" class="status-avatar">
+      {% else %}
+        <div class="status-avatar"></div>
+      {% endif %}
+      <div>
+        <div class="status-text">{{ data.status_name or data.name }}</div>
+        <div class="status-sub">{{ data.status_text or 'currently doing nothing' }}</div>
       </div>
     </div>
   </div>
@@ -310,6 +182,8 @@ body{
 </body>
 </html>
 """
+
+# --- End templates ---
 
 @app.route("/cousin/<user_id>", methods=["GET", "POST"])
 def cousin_profile(user_id):
@@ -331,13 +205,18 @@ def cousin_profile(user_id):
         if password == data.get("password"):
             return render_template_string(LOADING_HTML)
         else:
-            return "<h1 style='color:white;text-align:center;margin-top:50px'>❌ Wrong password!</h1>"
+            return render_template_string("""
+                <!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+                <body style="background:black;color:white;font-family:Inter,Arial;text-align:center;padding:40px;">
+                <h1>❌ Wrong password!</h1>
+                <p><a href="" style="color:#61f3ff;text-decoration:none;font-weight:700">Try again</a></p>
+                </body></html>
+            """)
 
     if verified:
         return render_template_string(PROFILE_HTML, data=data)
 
     return render_template_string(LOGIN_HTML)
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
