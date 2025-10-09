@@ -5,7 +5,7 @@ from flask import Flask, request, abort, render_template_string
 app = Flask(__name__)
 JSON_URL = "https://raw.githubusercontent.com/professerXisonCRACK/cousinunited/refs/heads/main/cousins.json"
 
-# --- Templates (fixed centering + responsive design) ---
+# --- Loading Screen ---
 LOADING_HTML = """
 <!doctype html>
 <html lang="en">
@@ -18,17 +18,16 @@ LOADING_HTML = """
   --bg:#000;
   --neon:#00fff7;
   --accent:#61f3ff;
-  --muted:rgba(255,255,255,0.08);
 }
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;}
 body{
-  background:var(--bg);
-  color:#fff;
-  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
   display:flex;
   align-items:center;
   justify-content:center;
+  background:var(--bg);
+  color:#fff;
+  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
   text-align:center;
   overflow:hidden;
 }
@@ -91,6 +90,7 @@ setTimeout(function(){
 </html>
 """
 
+# --- Login Screen ---
 LOGIN_HTML = """
 <!doctype html>
 <html lang="en">
@@ -104,15 +104,14 @@ LOGIN_HTML = """
   --neon:#00fff7;
   --glass: rgba(255,255,255,0.03);
 }
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;}
 body{
-  background: linear-gradient(180deg,#000 0%, #050505 60%);
-  color:#fff;
-  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
   display:flex;
   align-items:center;
   justify-content:center;
+  background: linear-gradient(180deg,#000 0%, #050505 60%);
+  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
   padding:20px;
 }
 .card{
@@ -163,6 +162,7 @@ small{display:block; margin-top:10px; color:rgba(255,255,255,0.6)}
 </html>
 """
 
+# --- Profile Screen ---
 PROFILE_HTML = """
 <!doctype html>
 <html lang="en">
@@ -180,44 +180,43 @@ PROFILE_HTML = """
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  background: radial-gradient(1200px 600px at 20% 10%, rgba(0,255,247,0.04), transparent 6%),
-              radial-gradient(1000px 500px at 85% 90%, rgba(97,243,255,0.03), transparent 6%),
-              var(--bg);
-  color:#fff;
-  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
-  min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
+  background: radial-gradient(1200px 600px at 20% 10%, rgba(0,255,247,0.04), transparent 6%),
+              radial-gradient(1000px 500px at 85% 90%, rgba(97,243,255,0.03), transparent 6%),
+              var(--bg);
+  font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+  color:#fff;
   padding:24px;
-  overflow-x:hidden;
 }
 .wrapper{
-  width:100%;
   max-width:900px;
-  margin:auto;
-  position:relative;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:18px;
   padding:28px;
   box-shadow: 0 10px 50px rgba(0,0,0,0.7);
+  width:100%;
+  max-width:500px;
   position:relative;
   overflow:hidden;
 }
 .banner{
   width:100%;
-  height:240px;
+  height:200px;
   border-radius:12px;
   object-fit:cover;
   filter:brightness(.55);
 }
 .avatar-wrap{
-  position:absolute;
-  left:50%;
-  top:180px;
-  transform:translate(-50%,-50%);
+  position:relative;
+  margin-top:-70px;
   text-align:center;
 }
 .avatar{
@@ -225,6 +224,7 @@ body{
   border:6px solid rgba(255,255,255,0.06);
   box-shadow:0 6px 30px rgba(0,255,247,0.06);
   object-fit:cover;
+  background:#111;
 }
 .username{
   font-size:2rem;
@@ -311,6 +311,7 @@ body{
 </html>
 """
 
+# --- Flask Route ---
 @app.route("/cousin/<user_id>", methods=["GET", "POST"])
 def cousin_profile(user_id):
     try:
