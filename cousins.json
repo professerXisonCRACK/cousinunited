@@ -9,15 +9,6 @@
         "token": "MOrdgHRx11825G2XDFxa1Q",
         "avatar": "https://cdn.discordapp.com/avatars/845482960441835560/12e900b5221a96211dccc902eee563c6.png?size=1024"
     },
-    "1403299727834873967": {
-        "name": "BEANS",
-        "rep": 44,
-        "rank": 386,
-        "cousin_id": "#A7B8C9",
-        "banner": "null",
-        "token": "hQaOQ2z4yDFqsT8_I2witA",
-        "password": "<67mangodudeman>"
-    },
     "805747807641534484": {
         "name": "yzr",
         "rep": 100,
@@ -37,9 +28,9 @@
         "token": "o_iwCYQXrU69PXUz-gYbDw"
     },
     "1326736390766985348": {
-        "name": "\uff61\ud81a\uddb9",
-        "rep": 43,
-        "rank": 366,
+        "name": "\ufe61\ud801\ude5a",
+        "rep": 50,
+        "rank": 362,
         "cousin_id": "#T7C9ZJ",
         "banner": null,
         "password": "blackcat.12355",
@@ -48,11 +39,12 @@
     },
     "869670984792277013": {
         "name": "Tiny",
-        "rep": 35,
-        "rank": 367,
+        "rep": 38,
+        "rank": 364,
         "cousin_id": "#GZIO4P",
         "banner": null,
         "password": null,
-        "avatar": "https://cdn.discordapp.com/avatars/869670984792277013/29186b9787b680603186a56d0e18ce36.png?size=1024"
+        "avatar": "https://cdn.discordapp.com/avatars/869670984792277013/29186b9787b680603186a56d0e18ce36.png?size=1024",
+        "token": "REoxzA8_zBU119AHV0iOow"
     }
 }
