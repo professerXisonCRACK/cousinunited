@@ -178,7 +178,7 @@ PROFILE_HTML = """
   --accent:#61f3ff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html,body{height:100%;width:100%;scroll-behavior:smooth;}
 body{
   display:flex;
   align-items:center;
@@ -189,13 +189,16 @@ body{
   font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
   color:#fff;
   padding:24px;
+  min-height:100vh;
 }
 .wrapper{
-  max-width:900px;
   width:100%;
+  max-width:1000px;
   display:flex;
   justify-content:center;
   align-items:center;
+  flex-direction:column;
+  margin:auto;
 }
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
@@ -203,9 +206,10 @@ body{
   padding:28px;
   box-shadow: 0 10px 50px rgba(0,0,0,0.7);
   width:100%;
-  max-width:500px;
+  max-width:520px;
   position:relative;
   overflow:hidden;
+  margin-bottom:40px;
 }
 .banner{
   width:100%;
@@ -231,10 +235,13 @@ body{
   font-weight:700;
   margin-top:12px;
   text-shadow:0 0 18px rgba(0,255,247,0.18);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
 }
 .verified-badge{
-  display:inline-block;
-  margin-left:8px;
   background:linear-gradient(90deg,var(--neon),var(--accent));
   color:#001;
   padding:4px 8px;
@@ -246,23 +253,24 @@ body{
   display:flex;
   justify-content:center;
   flex-wrap:wrap;
-  gap:12px;
-  margin-top:20px;
+  gap:10px;
+  margin-top:18px;
 }
 .info-pill{
-  background:rgba(255,255,255,0.03);
+  background:rgba(255,255,255,0.04);
   padding:8px 12px;
   border-radius:10px;
   font-weight:600;
   font-size:.9rem;
+  backdrop-filter:blur(10px);
 }
 .status-card{
-  margin:30px auto 0;
+  margin:28px auto 0;
   display:flex;
   align-items:center;
   gap:12px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
-  padding:12px;
+  background:rgba(255,255,255,0.03);
+  padding:14px 16px;
   border-radius:12px;
   width:fit-content;
   box-shadow:0 6px 30px rgba(0,0,0,0.6);
@@ -272,6 +280,43 @@ body{
 }
 .status-text{font-weight:600;font-size:.95rem}
 .status-sub{font-size:.85rem;color:rgba(255,255,255,0.6)}
+/* --- Discord Profile Style --- */
+.discord-card{
+  width:100%;
+  max-width:520px;
+  background:rgba(35,39,42,0.9);
+  border-radius:18px;
+  padding:20px;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  box-shadow:0 8px 40px rgba(0,0,0,0.8);
+}
+.discord-avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-right:16px;
+  border:3px solid #5865F2;
+}
+.discord-info h2{
+  font-size:1.2rem;
+  margin-bottom:4px;
+}
+.discord-info p{
+  font-size:.9rem;
+  color:rgba(255,255,255,0.7);
+}
+@media(max-width:600px){
+  .avatar{width:110px;height:110px;}
+  .username{font-size:1.5rem;}
+  .banner{height:150px;}
+  .info-pill{font-size:.8rem;padding:6px 10px;}
+  .discord-card{flex-direction:column;align-items:center;text-align:center;}
+  .discord-avatar{margin-right:0;margin-bottom:10px;}
+}
 </style>
 </head>
 <body>
@@ -306,10 +351,21 @@ body{
       </div>
     </div>
   </div>
+
+  {% if data.discord %}
+  <div class="discord-card">
+    <img src="{{ data.discord.avatar }}" class="discord-avatar">
+    <div class="discord-info">
+      <h2>{{ data.discord.username }}#{{ data.discord.tag }}</h2>
+      <p>{{ data.discord.status or "Online" }}</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 </body>
 </html>
 """
+
 
 # --- Flask Route ---
 @app.route("/cousin/<user_id>", methods=["GET", "POST"])
